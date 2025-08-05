@@ -1,0 +1,18 @@
+# Development Dockerfile
+FROM node:20-alpine
+
+# Install pnpm
+RUN npm install -g pnpm
+
+# Set workdir
+WORKDIR /app
+
+# Copy deps and install
+COPY package*.json ./
+COPY pnpm-lock.yaml ./
+COPY pnpm-workspace.yaml ./
+RUN pnpm install
+
+# For development, we'll mount the source code
+# Start the dev server
+CMD ["pnpm", "dev"]
