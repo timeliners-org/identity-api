@@ -122,6 +122,8 @@ class JWTService {
       return null
     }
 
+    // TODO: Maybe check if the user is still active or has changed important details
+
     // Alten Refresh Token widerrufen
     await this.revokeRefreshToken(refreshToken)
 
@@ -207,12 +209,14 @@ class JWTService {
     })
 
     if (user) {
+      const groupNames = user.groups.map(group => group.group.name)
+
       if (
         user.isActive === false ||
         payload.email !== user.email ||
         payload.username !== user.username ||
         payload.isVerified !== user.isVerified ||
-        payload.groups !== user.groups.map(group => group.group.name)
+        !payload.groups?.every(group => groupNames.includes(group))
       ) {
         return null
       }

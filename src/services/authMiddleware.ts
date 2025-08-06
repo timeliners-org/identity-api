@@ -23,6 +23,8 @@ export async function authMiddleware(request: FastifyRequest, reply: FastifyRepl
     // validate the user token with the database
     const user = await jwtService.validateUserToken(token)
 
+    console.log('Authenticated user:', user)
+
     if (!user) {
       return reply.code(401).send({
         error: 'User not found or token is invalid'
