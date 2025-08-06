@@ -36,7 +36,11 @@ export default async function loginRoute(app: FastifyInstance) {
                 id: { type: 'string' },
                 email: { type: 'string' },
                 username: { type: 'string' },
-                isVerified: { type: 'boolean' }
+                isVerified: { type: 'boolean' },
+                groups: {
+                  type: 'array',
+                  items: { type: 'string' }
+                }
               }
             },
             tokens: {
@@ -87,11 +91,32 @@ export default async function loginRoute(app: FastifyInstance) {
       const { id, password } = validationResult.data
 
       const user = await prisma.user.findUnique({
-        where: { id }
+        where: { id },
+        select: {
+          id: true,
+          email: true,
+          username: true,
+          passwordHash: true,
+          isVerified: true,
+          groups: {
+            select: {
+              group: {
+                select: {
+                  name: true
+                }
+              }
+            }
+          },
+          isActive: true
+        }
       })
 
       if (!user) {
         return reply.code(401).send({ error: 'Invalid credentials' })
+      }
+
+      if (!user.isActive) {
+        return reply.code(401).send({ error: 'User account is inactive' })
       }
 
       const isValidPassword = await bcrypt.compare(password, user.passwordHash)
@@ -110,7 +135,8 @@ export default async function loginRoute(app: FastifyInstance) {
         userId: user.id,
         email: user.email,
         username: user.username,
-        isVerified: user.isVerified
+        isVerified: user.isVerified,
+        groups: user.groups.map(group => group.group.name)
       }
 
       const tokens = await jwtService.generateTokenPair(tokenPayload)
@@ -121,7 +147,8 @@ export default async function loginRoute(app: FastifyInstance) {
           id: user.id,
           email: user.email,
           username: user.username,
-          isVerified: user.isVerified
+          isVerified: user.isVerified,
+          groups: user.groups.map(group => group.group.name)
         },
         tokens: {
           accessToken: tokens.accessToken,

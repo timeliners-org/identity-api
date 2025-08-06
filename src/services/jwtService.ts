@@ -8,6 +8,7 @@ export interface TokenPayload {
   email: string
   username: string
   isVerified: boolean
+  groups?: string[]
 }
 
 export interface TokenPair {
@@ -173,6 +174,59 @@ class JWTService {
   private getRefreshTokenExpiryMs(): number {
     // 7 days in milliseconds
     return 7 * 24 * 60 * 60 * 1000
+  }
+
+  /**
+   * Validates a user token against the database
+   */
+  async validateUserToken(token: string): Promise<TokenPayload | null> {
+    const payload = this.verifyAccessToken(token)
+    if (!payload) {
+      return null
+    }
+
+    // Check if user exists in the database
+    const user = await prisma.user.findUnique({
+      where: { id: payload.userId },
+      select: {
+        id: true,
+        email: true,
+        username: true,
+        isVerified: true,
+        groups: {
+          select: {
+            group: {
+              select: {
+                name: true
+              }
+            }
+          }
+        },
+        isActive: true
+      }
+    })
+
+    if (user) {
+      if (
+        user.isActive === false ||
+        payload.email !== user.email ||
+        payload.username !== user.username ||
+        payload.isVerified !== user.isVerified ||
+        payload.groups !== user.groups.map(group => group.group.name)
+      ) {
+        return null
+      }
+
+      return {
+        userId: user.id,
+        email: user.email,
+        username: user.username,
+        isVerified: user.isVerified,
+        groups: user.groups.map(group => group.group.name)
+      }
+    } else {
+      return null
+    }
   }
 }
 

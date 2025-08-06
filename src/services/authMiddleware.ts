@@ -19,16 +19,18 @@ export async function authMiddleware(request: FastifyRequest, reply: FastifyRepl
     }
 
     const token = authHeader.substring(7)
-    const payload = jwtService.verifyAccessToken(token)
 
-    if (!payload) {
+    // validate the user token with the database
+    const user = await jwtService.validateUserToken(token)
+
+    if (!user) {
       return reply.code(401).send({
-        error: 'Invalid or expired access token'
+        error: 'User not found or token is invalid'
       })
     }
 
     // Attach user information to the request
-    request.user = payload
+    request.user = user
   } catch (error) {
     console.error('Authentication failed:', error)
     return reply.code(401).send({
