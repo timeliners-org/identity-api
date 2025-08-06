@@ -1,6 +1,7 @@
 // src/routes/auth/profile.ts
 import { FastifyInstance } from 'fastify'
 import { authMiddleware } from '@/services/authMiddleware'
+import { prisma } from '@/lib/prisma'
 
 export default async function profileRoute(app: FastifyInstance) {
   app.get('/profile', {
@@ -29,7 +30,13 @@ export default async function profileRoute(app: FastifyInstance) {
                 id: { type: 'string' },
                 email: { type: 'string' },
                 username: { type: 'string' },
-                isVerified: { type: 'boolean' }
+                isVerified: { type: 'boolean' },
+                groups: {
+                  type: 'array',
+                  items: {
+                    type: 'string'
+                  }
+                }
               }
             }
           }
@@ -47,12 +54,31 @@ export default async function profileRoute(app: FastifyInstance) {
       // User is already verified by authMiddleware
       const user = request.user!
 
+      // Fetch user's groups from the database
+      const userWithGroups = await prisma.user.findUnique({
+        where: { id: user.userId },
+        select: {
+          groups: {
+            select: {
+              group: {
+                select: {
+                  name: true
+                }
+              }
+            }
+          }
+        }
+      })
+
+      const groups = userWithGroups?.groups.map(g => g.group.name) || []
+
       reply.code(200).send({
         user: {
           id: user.userId,
           email: user.email,
           username: user.username,
-          isVerified: user.isVerified
+          isVerified: user.isVerified,
+          groups: groups
         }
       })
     } catch (error) {

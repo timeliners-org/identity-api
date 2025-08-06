@@ -354,7 +354,7 @@ pnpm run prisma:migrate
 
 ## Admin User
 
-An admin user is automatically created on first startup. Check the console logs for the generated credentials, or set them via environment variables:
+An admin user is automatically created on first startup. Set them via environment variables:
 
 ```bash
 ADMIN_EMAIL=admin@example.com

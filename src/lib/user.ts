@@ -2,13 +2,17 @@ import { prisma } from '@/lib/prisma'
 import bcrypt from 'bcrypt'
 
 export async function initAdminUser() {
-  const password = await bcrypt.hash('admin', 10)
+  const adminEmail = process.env.ADMIN_EMAIL || 'admin@example.com'
+  const adminUsername = process.env.ADMIN_USERNAME || 'admin'
+  const adminPassword = process.env.ADMIN_PASSWORD || 'admin'
+
+  const password = await bcrypt.hash(adminPassword, 10)
   return prisma.user.upsert({
-    where: { username: 'admin' },
+    where: { username: adminUsername },
     update: {},
     create: {
-      email: '',
-      username: 'admin',
+      email: adminEmail,
+      username: adminUsername,
       passwordHash: password,
       groups: {
         create: {
@@ -17,6 +21,8 @@ export async function initAdminUser() {
           }
         }
       },
+      isActive: true,
+      isVerified: true,
     },
   })
 }
