@@ -2,13 +2,14 @@
 import jwt from 'jsonwebtoken'
 import { prisma } from '@/lib/prisma'
 import crypto from 'crypto'
+import { group } from 'console'
 
 export interface TokenPayload {
   userId: string
   email: string
   username: string
   isVerified: boolean
-  groups?: string[]
+  groups: string[]
 }
 
 export interface TokenPair {
@@ -93,7 +94,27 @@ class JWTService {
     try {
       const refreshTokenRecord = await prisma.refreshToken.findUnique({
         where: { token },
-        include: { user: true }
+        select: {
+          user: {
+            select: {
+              id: true,
+              email: true,
+              username: true,
+              isVerified: true,
+              groups: {
+                select: {
+                  group: {
+                    select: {
+                      name: true
+                    }
+                  }
+                }
+              }
+            }
+          },
+          isRevoked: true,
+          expiresAt: true
+        }
       })
 
       if (!refreshTokenRecord ||
@@ -106,7 +127,8 @@ class JWTService {
         userId: refreshTokenRecord.user.id,
         email: refreshTokenRecord.user.email,
         username: refreshTokenRecord.user.username,
-        isVerified: refreshTokenRecord.user.isVerified
+        isVerified: refreshTokenRecord.user.isVerified,
+        groups: refreshTokenRecord.user.groups.map(group => group.group.name)
       }
     } catch (error) {
       return null
