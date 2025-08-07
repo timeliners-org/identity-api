@@ -4,7 +4,7 @@ import { authMiddleware } from '@/services/authMiddleware'
 import { prisma } from '@/lib/prisma'
 
 export default async function userRoute(app: FastifyInstance) {
-  app.get('/', {
+  app.get('', {
     preHandler: authMiddleware,
     schema: {
       tags: ['User'],
