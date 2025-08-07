@@ -3,12 +3,12 @@ import { FastifyInstance } from 'fastify'
 import { authMiddleware } from '@/services/authMiddleware'
 import { prisma } from '@/lib/prisma'
 
-export default async function profileRoute(app: FastifyInstance) {
-  app.get('/profile', {
+export default async function userRoute(app: FastifyInstance) {
+  app.get('/', {
     preHandler: authMiddleware,
     schema: {
-      tags: ['Auth'],
-      summary: 'Get user profile',
+      tags: ['User'],
+      summary: 'Get own profile',
       description: 'Retrieves the profile information of the logged-in user (protected route)',
       headers: {
         type: 'object',

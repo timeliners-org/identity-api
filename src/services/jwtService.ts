@@ -2,7 +2,6 @@
 import jwt from 'jsonwebtoken'
 import { prisma } from '@/lib/prisma'
 import crypto from 'crypto'
-import { group } from 'console'
 
 export interface TokenPayload {
   userId: string

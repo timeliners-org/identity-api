@@ -5,6 +5,7 @@ import userGroupRoute from '@/routes/user/own-group'
 import groupUserRoute from '@/routes/user/group'
 import createUserRoute from '@/routes/user/create'
 import getUserByIdRoute from '@/routes/user/get-user-by-id'
+import userRoute from '@/routes/user/user'
 
 export default async function userRoutes(app: FastifyInstance) {
   // Registriere alle User-Routen
@@ -13,4 +14,5 @@ export default async function userRoutes(app: FastifyInstance) {
   await app.register(groupUserRoute)
   await app.register(createUserRoute)
   await app.register(getUserByIdRoute)
+  await app.register(userRoute)
 }
