@@ -7,6 +7,7 @@ import createUserRoute from '@/routes/user/create'
 import getUserByIdRoute from '@/routes/user/get-user-by-id'
 import getUserRoute from '@/routes/user/get'
 import updateUserRoute from '@/routes/user/update'
+import deleteUserRoute from '@/routes/user/delete'
 
 export default async function userRoutes(app: FastifyInstance) {
   // Registriere alle User-Routen
@@ -17,4 +18,5 @@ export default async function userRoutes(app: FastifyInstance) {
   await app.register(getUserByIdRoute)
   await app.register(getUserRoute)
   await app.register(updateUserRoute)
+  await app.register(deleteUserRoute)
 }

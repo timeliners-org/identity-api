@@ -54,6 +54,10 @@ export const UpdateUserSchema = z.object({
   username: z.string().min(3, 'Username must be at least 3 characters').max(50, 'Username must be at most 50 characters').optional()
 })
 
+export const DeleteUserQuerySchema = z.object({
+  confirm: z.enum(['true'], { message: 'Confirmation required: confirm=true must be provided' })
+})
+
 // Helper function for validation errors
 export const formatValidationErrors = (errors: z.core.$ZodIssue[]) => {
   return errors.map(err => ({
