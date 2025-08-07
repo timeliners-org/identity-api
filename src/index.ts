@@ -73,7 +73,7 @@ process.on('SIGINT', () => {
   app.close()
 })
 
-app.listen({ port: 3000, host: '0.0.0.0' }, err => {
+app.listen({ port: Number.parseInt(process.env.PORT || "3000"), host: '0.0.0.0' }, err => {
   if (err) throw err
 })
 

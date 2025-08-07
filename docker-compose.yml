@@ -13,6 +13,8 @@ services:
       interval: 10s
       timeout: 5s
       retries: 5
+    networks:
+      - identity-database
 
   app:
     build: .
@@ -24,6 +26,15 @@ services:
       - "3000:3000"
     env_file:
       - .env
+    networks:
+      - identity-network
+      - identity-database
 
 volumes:
   db-data:
+
+networks:
+  identity-network:
+    driver: bridge
+  identity-database:
+    driver: bridge
