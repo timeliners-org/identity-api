@@ -59,7 +59,7 @@ export const DeleteUserQuerySchema = z.object({
 })
 
 export const ChangePasswordSchema = z.object({
-  old_password: z.string().min(8, 'Old password must be at least 8 characters'),
+  old_password: z.string(),
   new_password: z.string().min(8, 'New password must be at least 8 characters')
 })
 

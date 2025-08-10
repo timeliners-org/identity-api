@@ -9,7 +9,7 @@ interface DeleteUserQuery {
 }
 
 export default async function deleteUserRoute(app: FastifyInstance) {
-  app.delete('/', {
+  app.delete('', {
     preHandler: authMiddleware,
     schema: {
       tags: ['User'],
