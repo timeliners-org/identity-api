@@ -6,13 +6,15 @@ import verifyEmailRoute from '@/routes/auth/verify-email'
 import resendVerificationRoute from '@/routes/auth/resend-verification'
 import refreshTokenRoute from '@/routes/auth/refresh-token'
 import revokeTokenRoute from '@/routes/auth/revoke-token'
+import changePasswordRoute from '@/routes/auth/change-password'
 
 export default async function authRoutes(app: FastifyInstance) {
   // Register all auth routes
-  await app.register(registerRoute)
+  await app.register(changePasswordRoute)
   await app.register(loginRoute)
-  await app.register(verifyEmailRoute)
-  await app.register(resendVerificationRoute)
   await app.register(refreshTokenRoute)
+  await app.register(registerRoute)
+  await app.register(resendVerificationRoute)
   await app.register(revokeTokenRoute)
+  await app.register(verifyEmailRoute)
 }

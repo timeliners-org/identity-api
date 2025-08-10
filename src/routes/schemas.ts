@@ -58,6 +58,11 @@ export const DeleteUserQuerySchema = z.object({
   confirm: z.enum(['true'], { message: 'Confirmation required: confirm=true must be provided' })
 })
 
+export const ChangePasswordSchema = z.object({
+  old_password: z.string().min(8, 'Old password must be at least 8 characters'),
+  new_password: z.string().min(8, 'New password must be at least 8 characters')
+})
+
 // Helper function for validation errors
 export const formatValidationErrors = (errors: z.core.$ZodIssue[]) => {
   return errors.map(err => ({
